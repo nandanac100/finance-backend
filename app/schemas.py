@@ -2,18 +2,28 @@ from pydantic import BaseModel,EmailStr
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
+from enum import Enum
+
+class UserRole(str,Enum):
+    admin="admin"
+    viewer="viewer"
+    analyst="analyst"
+class RecordType(str,Enum):
+    income="income"
+    expense="expense"
+
 
 class UserCreate(BaseModel):
     name:str
     email:EmailStr
     password:str
-    role:str
+    role:UserRole
 
 class UserResponse(BaseModel):
     id:UUID
     name:str
     email:EmailStr
-    role:str
+    role:UserRole
     is_active:bool
     created_at:datetime
 
@@ -23,7 +33,7 @@ class UserResponse(BaseModel):
 class RecordCreate(BaseModel):
     title:str
     amount:float
-    type:str
+    type:RecordType
     category:str
     description:Optional[str]=None
     date:datetime
@@ -31,7 +41,7 @@ class RecordCreate(BaseModel):
 class RecordUpdate(BaseModel):
     title:Optional[str]=None
     amount:Optional[float]=None
-    type:Optional[str]=None
+    type:Optional[RecordType]=None
     category:Optional[str]=None
     description:Optional[str]=None
     date:Optional[datetime]=None
@@ -40,7 +50,7 @@ class RecordResponse(BaseModel):
     id:UUID
     title:str
     amount:float
-    type:str
+    type:RecordType
     category:str
     description:Optional[str]=None
     date:datetime
