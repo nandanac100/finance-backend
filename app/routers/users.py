@@ -2,8 +2,9 @@ from fastapi import FastAPI,Depends,HTTPException,APIRouter
 from sqlalchemy.orm import Session
 from app.db import Base,engine,get_db
 from app.models import User,Records
-from app.schemas import UserCreate,UserResponse,UserRole
+from app.schemas import UserCreate,UserResponse,UserRole,UserStatusUpdate
 from app.dependencies import admin_only
+from uuid import UUID
 
 router=APIRouter(prefix="/users" ,tags=["Users"])
 
@@ -23,3 +24,13 @@ def get_users(db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     users=db.query(User).all()
     return users
 
+@router.patch("/{user_id}/status",response_model=UserResponse)
+def create_user(user_id:UUID,status_data:bool,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
+    user=db.query(User).filter(User.id==user_id).first()
+    if not user:
+        raise HTTPException(status_code=404,details="user not found")
+    user.is_active=status_data
+    db.commit()
+    db.refresh(user)
+
+    return user

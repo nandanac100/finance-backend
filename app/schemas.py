@@ -8,11 +8,15 @@ class UserRole(str,Enum):
     admin="admin"
     viewer="viewer"
     analyst="analyst"
+
+
 class RecordType(str,Enum):
     income="income"
     expense="expense"
 
-
+class UserStatusUpdate(BaseModel):
+    is_active:bool
+    
 class UserCreate(BaseModel):
     name:str
     email:EmailStr
