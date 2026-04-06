@@ -28,6 +28,13 @@ class RecordCreate(BaseModel):
     description:Optional[str]=None
     date:datetime
     created_by:UUID
+class RecordUpdate(BaseModel):
+    title:Optional[str]=None
+    amount:Optional[float]=None
+    type:Optional[str]=None
+    category:Optional[str]=None
+    description:Optional[str]=None
+    date:Optional[datetime]=None
 
 class RecordResponse(BaseModel):
     id:UUID

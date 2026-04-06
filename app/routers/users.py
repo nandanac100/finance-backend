@@ -6,7 +6,7 @@ from app.schemas import UserCreate,UserResponse
 
 router=APIRouter(prefix="/users" ,tags=["Users"])
 
-@router.post("/user",response_model=UserResponse)
+@router.post("/",response_model=UserResponse)
 def create_user(user:UserCreate,db:Session=Depends(get_db)):
     existing_user=db.query(User).filter(User.email==user.email).first()
     if existing_user:
@@ -17,7 +17,7 @@ def create_user(user:UserCreate,db:Session=Depends(get_db)):
     db.refresh(new_user) 
     return new_user
 
-@router.get("/user",response_model=list[UserResponse])
+@router.get("/",response_model=list[UserResponse])
 def get_users(db:Session=Depends(get_db)):
     users=db.query(User).all()
     return users
