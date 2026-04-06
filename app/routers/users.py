@@ -21,7 +21,7 @@ def create_user(user:UserCreate,db:Session=Depends(get_db),role:UserRole=Depends
     return new_user
 
 @router.get("/",response_model=list[UserResponse])
-def get_users(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
+def get_users(db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     users=db.query(User).all()
     return users
 
@@ -36,7 +36,7 @@ def get_user_records(user_id:UUID,db:Session=Depends(get_db)):
 def create_user(user_id:UUID,status_data:bool,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     user=db.query(User).filter(User.id==user_id).first()
     if not user:
-        raise HTTPException(status_code=404,details="user not found")
+        raise HTTPException(status_code=404,detail="user not found")
     user.is_active=status_data
     db.commit()
     db.refresh(user)

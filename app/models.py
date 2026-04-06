@@ -27,7 +27,7 @@ class Records(Base):
     amount=Column(Float,nullable=False)
     type=Column(Enum("expense","income",name="record_type"),nullable=False)
     category=Column(String,nullable=False)
-    description=Column(String,nullable=False)
+    description=Column(String,nullable=True)
     date=Column(DateTime,nullable=False)
     created_at=Column(DateTime,default=datetime.utcnow)
     created_by=Column(UUID(as_uuid=True),ForeignKey("users.id"))
