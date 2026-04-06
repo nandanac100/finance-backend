@@ -12,7 +12,7 @@ from app.dependencies import record_view_role
 router=APIRouter(prefix="/dashboard" ,tags=["Daashboard"])
 
 @router.get("/summary")
-def get_summary(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
+def get_summary(db:Session=Depends(get_db)):
     net_income=db.query(func.sum(Records.amount)).filter(Records.type=="income").scalar() or 0
     net_expense=db.query(func.sum(Records.amount)).filter(Records.type=="expense").scalar() or 0
     net_balance=net_income-net_expense
@@ -23,7 +23,7 @@ def get_summary(db:Session=Depends(get_db),role:UserRole=Depends(record_view_rol
     }
 
 @router.get("/category-totals")
-def get_catetegory_totals(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
+def get_catetegory_totals(db:Session=Depends(get_db)):
     category_totals=(db.query(Records.category,func.sum(Records.amount).label("total")).group_by(Records.category).all())
     return [
         {
@@ -40,7 +40,7 @@ def get_recent_activities(db:Session=Depends(get_db)):
     return records
 
 @router.get("/monthly-trends")
-def get_monthly_trends(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
+def get_monthly_trends(db:Session=Depends(get_db)):
     monthly_trends=(
         db.query(func.date_trunc("month",Records.date).label("month"),Records.type,func.sum(Records.amount).label("total")).group_by(func.date_trunc("month",Records.date),Records.type).order_by(func.date_trunc("month",Records.date)).all()
     )

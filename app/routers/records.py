@@ -86,6 +86,6 @@ def get_filtered_records(
         query=query.filter(Records.date<=end_date)
     
     if search:
-        query=query.filter(Records.search.ilike(f"%{search}%"))
+        query=query.filter(Records.title.ilike(f"%{search}%"))
     
     return query.all()
