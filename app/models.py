@@ -14,7 +14,7 @@ class User(Base):
     role=Column(String,nullable=False,default="viewer")
     is_active=Column(Boolean,default=True)
     created_at=Column(DateTime,default=datetime.utcnow)
-    records=relationship("Record",back_populates="user")
+    records=relationship("Records",back_populates="user")
 
 
 
