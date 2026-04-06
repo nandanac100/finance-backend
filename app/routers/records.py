@@ -38,6 +38,7 @@ def get_record(record_id:UUID,db:Session=Depends(get_db)):
     if not record:
         raise HTTPException(status_code=404,detail="record not found")
     return record
+
 @router.put("/{record_id}",response_model=RecordResponse)
 def update_record(record_id:UUID,update_data:RecordUpdate,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     record=db.query(Records).filter(Records.id==record_id).first()
