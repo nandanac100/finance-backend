@@ -2,9 +2,10 @@ from fastapi import FastAPI,Depends,HTTPException,APIRouter
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import User,Records
-from app.schemas import RecordCreate,RecordResponse,RecordUpdate,UserRole
+from app.schemas import RecordCreate,RecordResponse,RecordUpdate,UserRole,RecordType
 from uuid import UUID
 from app.dependencies import admin_only,record_view_role
+from datetime import datetime
 
 router=APIRouter(prefix="/records" ,tags=["Records"])
 
@@ -61,3 +62,29 @@ def delete_product(record_id:UUID,db:Session=Depends(get_db),role:UserRole=Depen
     else: 
         return "no record found"
     
+@router.get("/search/",response_model=list[RecordResponse])
+def get_filtered_records(
+    type:RecordType |None=None,
+    category:str |None=None,
+    start_date:datetime |None=None,
+    end_date:datetime |None=None,
+    search:str |None=None,
+    db:Session=Depends(get_db),
+    role:UserRole=Depends(record_view_role)
+):
+    query=db.query(Records)
+
+    if type:
+        query=query.filter(Records.type==type.value)
+    if category:
+        query=query.filter(Records.category.ilike(f"%{category}%"))
+    if start_date:
+        query=query.filter(Records.date>=start_date)
+    
+    if end_date:
+        query=query.filter(Records.date<=end_date)
+    
+    if search:
+        query=query.filter(Records.search.ilike(f"%{search}%"))
+    
+    return query.all()
