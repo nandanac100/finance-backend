@@ -23,7 +23,7 @@ def get_summary(db:Session=Depends(get_db),role:UserRole=Depends(record_view_rol
     }
 
 @router.get("/category-totals")
-def get_catetegory_totals(db:Session=Depends(get_db)):
+def get_catetegory_totals(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
     category_totals=(db.query(Records.category,func.sum(Records.amount).label("total")).group_by(Records.category).all())
     return [
         {

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.db import Base,engine,get_db
 from app.models import User,Records
 from app.schemas import UserCreate,UserResponse,UserRole,UserStatusUpdate,RecordResponse
-from app.dependencies import admin_only
+from app.dependencies import admin_only,record_view_role
 from uuid import UUID
 
 
@@ -21,7 +21,7 @@ def create_user(user:UserCreate,db:Session=Depends(get_db),role:UserRole=Depends
     return new_user
 
 @router.get("/",response_model=list[UserResponse])
-def get_users(db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
+def get_users(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
     users=db.query(User).all()
     return users
 

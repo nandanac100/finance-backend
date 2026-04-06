@@ -33,7 +33,7 @@ def get_records(db:Session=Depends(get_db),role:UserRole=Depends(record_view_rol
     records=db.query(Records).all()
     return records
 @router.get("/{record_id}",response_model=RecordResponse)
-def get_record(record_id:UUID,db:Session=Depends(get_db)):
+def get_record(record_id:UUID,db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
     record=db.query(Records).filter(Records.id==record_id).first()
     if not record:
         raise HTTPException(status_code=404,detail="record not found")
