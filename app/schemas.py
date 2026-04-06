@@ -14,6 +14,8 @@ class RecordType(str,Enum):
     income="income"
     expense="expense"
 
+class UserStatusUpdate(BaseModel):
+    is_active:bool
 
 class UserCreate(BaseModel):
     name:str=Field(...,min_length=3,max_length=50)

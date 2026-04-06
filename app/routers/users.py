@@ -5,6 +5,9 @@ from app.models import User,Records
 from app.schemas import UserCreate,UserResponse,UserRole,UserStatusUpdate,RecordResponse
 from app.dependencies import admin_only,record_view_role
 from uuid import UUID
+from passlib.context import CryptContext
+
+pwd_context=CryptContext(schemes=["bcrypt"],deprecated="auto")
 
 
 router=APIRouter(prefix="/users" ,tags=["Users"])
@@ -14,7 +17,10 @@ def create_user(user:UserCreate,db:Session=Depends(get_db),role:UserRole=Depends
     existing_user=db.query(User).filter(User.email==user.email).first()
     if existing_user:
         raise HTTPException(status_code=400,detail="Email already exists")
-    new_user=User(name=user.name,email=user.email,password_hash=user.password,role=user.role)
+    
+    hashed_password=pwd_context.hash(user.password)
+    new_user=User(name=user.name,email=user.email,password_hash=hashed_password,role=user.role)
+
     db.add(new_user)
     db.commit()
     db.refresh(new_user) 
