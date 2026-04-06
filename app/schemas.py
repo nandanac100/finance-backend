@@ -9,10 +9,19 @@ class UserRole(str,Enum):
     viewer="viewer"
     analyst="analyst"
 
-
 class RecordType(str,Enum):
     income="income"
     expense="expense"
+
+class LoginRequest(BaseModel):
+    email:EmailStr
+    password:str
+    
+class LoginResponse(BaseModel):
+    message:str
+    role:UserRole
+    user_id:UUID
+
 
 class UserStatusUpdate(BaseModel):
     is_active:bool
