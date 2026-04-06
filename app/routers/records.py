@@ -2,13 +2,14 @@ from fastapi import FastAPI,Depends,HTTPException,APIRouter
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import User,Records
-from app.schemas import RecordCreate,RecordResponse,RecordUpdate
+from app.schemas import RecordCreate,RecordResponse,RecordUpdate,UserRole
 from uuid import UUID
+from app.dependencies import admin_only,record_view_role
 
 router=APIRouter(prefix="/records" ,tags=["Records"])
 
 @router.post("/",response_model=RecordResponse)
-def create_record(record:RecordCreate,db:Session=Depends(get_db)):
+def create_record(record:RecordCreate,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     existing_user=db.query(User).filter(User.id==record.created_by).first()
     if not existing_user:
         raise HTTPException(status_code=404,detail="user not found")
@@ -27,7 +28,7 @@ def create_record(record:RecordCreate,db:Session=Depends(get_db)):
     return new_record
 
 @router.get("/",response_model=list[RecordResponse])
-def get_records(db:Session=Depends(get_db)):
+def get_records(db:Session=Depends(get_db),role:UserRole=Depends(record_view_role)):
     records=db.query(Records).all()
     return records
 @router.get("/{record_id}",response_model=RecordResponse)
@@ -37,7 +38,7 @@ def get_record(record_id:UUID,db:Session=Depends(get_db)):
         raise HTTPException(status_code=404,detail="record not found")
     return record
 @router.put("/{record_id}",response_model=RecordResponse)
-def update_record(record_id:UUID,update_data:RecordUpdate,db:Session=Depends(get_db)):
+def update_record(record_id:UUID,update_data:RecordUpdate,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     record=db.query(Records).filter(Records.id==record_id).first()
     if not record:
         raise HTTPException(status_code=404,detail="record not found")
@@ -52,7 +53,7 @@ def update_record(record_id:UUID,update_data:RecordUpdate,db:Session=Depends(get
     return record
 
 @router.delete("/{record_id}")
-def delete_product(record_id:UUID,db:Session=Depends(get_db)):
+def delete_product(record_id:UUID,db:Session=Depends(get_db),role:UserRole=Depends(admin_only)):
     record=db.query(Records).filter(Records.id==record_id).first()
     if record:
        db.delete(record)
