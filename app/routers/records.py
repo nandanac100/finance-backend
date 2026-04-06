@@ -59,3 +59,4 @@ def delete_product(record_id:UUID,db:Session=Depends(get_db)):
        db.commit() 
     else: 
         return "no record found"
+    
